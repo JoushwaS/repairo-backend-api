@@ -88,15 +88,20 @@ passport.use(
 		try {
 			const{email, password,fullName,phoneNumber,role,gender,age,OTP,user_device_token,user_device_type}=req.body
 			const checkEmail = await User.checkExistingField("email", email);
-
+			if(role==="admin"){
+				return cb(null, false, {
+					statusCode: 409,
+					message: "Operation Not Allowed",
+				});	
+			}
+			
 			if (checkEmail) {
 				return cb(null, false, {
 					statusCode: 409,
 					message: "Email already registered, log in instead",
 				});
 			}
-
-			
+		
 		
 			const newUser = new User();
 			newUser.email = email;

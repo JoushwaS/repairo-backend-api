@@ -8,7 +8,7 @@ const allRoles = {
     "getAllUsers",
     "UpdateUserAccountLocation",
     "updateUserAccountDetails",
-
+    "createService",
     "UserInfoDetails",
   ],
   user: ["UpdateUserAccountLocation"],

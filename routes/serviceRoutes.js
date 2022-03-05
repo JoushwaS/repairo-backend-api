@@ -1,21 +1,22 @@
 const express = require("express");
-const adminController = require("../controllers/adminController");
+const serviceController = require("../controllers/serviceController");
 const authentication = require("../middlewares/authenticate.middleware");
 const catchAsync = require("../middlewares/catchAsync.middleware");
 const verifyRights = require("../middlewares/verifyRights.middleware");
-const { getAllUsers, adminLogin } = adminController;
+const { createService, getAllServices } = serviceController;
 const { multerDiskUpload } = require("../middlewares/upload.middleware");
 
 const { authenticate } = authentication;
 
 const router = express.Router();
-router.post("/admin-login", catchAsync(adminLogin));
 
-router.get(
-  "/get-all-users",
+router.post(
+  "/create-service",
+  multerDiskUpload.single("file"),
   authenticate,
-  verifyRights("getAllUsers"),
-  catchAsync(getAllUsers)
+  verifyRights("createService"),
+  catchAsync(createService)
 );
 
+router.get("/get-all-services", catchAsync(getAllServices));
 module.exports = router;
