@@ -5,6 +5,7 @@ const userRoutes = require("./userRoutes");
 const authRoutes = require("./authRoutes");
 const serviceRoutes = require("./serviceRoutes");
 const adminRoutes = require("./adminRoutes");
+const postRoutes = require("./postRoutes");
 
 const router = express.Router();
 
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: "/auth",
     route: authRoutes,
+  },
+  {
+    path: "/post",
+    route: postRoutes,
   },
 ];
 
