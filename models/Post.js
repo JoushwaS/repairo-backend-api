@@ -19,7 +19,6 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
       required: true,
-      unique: true,
     },
     image: {
       type: mongoose.Schema.Types.String,
@@ -44,12 +43,12 @@ const postSchema = new mongoose.Schema(
     },
     isCallAllowed: {
       type: mongoose.Schema.Types.Boolean,
-      required: true,
+
       default: true,
     },
     isMessageAllowed: {
       type: mongoose.Schema.Types.Boolean,
-      required: true,
+
       default: true,
     },
     postType: {
@@ -58,28 +57,25 @@ const postSchema = new mongoose.Schema(
       enum: postTypesList,
     },
 
-    likes: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Users",
-        },
-      },
-    ],
+    likesId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Likes",
+      default: null,
+    },
 
-    comments: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Users",
-          required: true,
-        },
-        commentText: {
-          type: mongoose.Schema.Types.String,
-          required: true,
-        },
-      },
-    ],
+    // comments: [
+    //   {
+    //     user: {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Users",
+    //       required: true,
+    //     },
+    //     commentText: {
+    //       type: mongoose.Schema.Types.String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
   },
   { timestamps: true }
 );

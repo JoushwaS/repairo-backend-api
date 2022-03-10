@@ -3,7 +3,7 @@ const postController = require("../controllers/postController");
 const authentication = require("../middlewares/authenticate.middleware");
 const catchAsync = require("../middlewares/catchAsync.middleware");
 const verifyRights = require("../middlewares/verifyRights.middleware");
-const { createPost, getAllPosts } = postController;
+const { createPost, getAllPosts, likePost } = postController;
 const { multerDiskUpload } = require("../middlewares/upload.middleware");
 
 const { authenticate } = authentication;
@@ -18,6 +18,12 @@ router.post(
   catchAsync(createPost)
 );
 
+router.post(
+  "/like-post",
+  authenticate,
+  //   verifyRights("createPost"),
+  catchAsync(likePost)
+);
 router.get("/get-all-posts", catchAsync(getAllPosts));
 
 module.exports = router;
