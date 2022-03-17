@@ -91,7 +91,7 @@ passport.use(
 
         fullName,
         phoneNumber,
-        role,
+        // role,
         gender,
         age,
 
@@ -114,16 +114,31 @@ passport.use(
       }
 
       // await sendUserCredentials(email, newUser);
+      const user = await User.findOneAndUpdate(
+        { phoneNumber: phoneNumber },
+        {
+          email: email,
+          fullName: fullName,
+          gender: gender,
+          age: age,
+          isProfileCompleted: true,
+        }
+      );
 
+      res.status(200).json({
+        status: "success",
+        message: "Registration Sucessfull",
+        data: { user },
+      });
       // console.log("newUserResult>>>>>>>>>",newUserResult)
-      return cb(null, newUser);
+      return cb(null, user);
     } catch (err) {
       DEBUG(err);
-      // res.status(400).json({
-      // 	status: 0,
-      // 	message: 'Sign Up failed',
-      // 	error: { error },
-      //   });
+      res.status(400).json({
+        status: 0,
+        message: "Registration failed",
+        error: { err },
+      });
       console.error(err);
       // return cb(null, false, { statusCode: 400, message: err.message });
     }

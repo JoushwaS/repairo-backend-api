@@ -120,67 +120,64 @@ module.exports = {
    * @return {Promise<*>}
    */
 
-  addUserInfo: async (req, res, next) => {
-    passport.authenticate(
-      "addUserInfo",
-      { session: false },
-      async (err, user, info) => {
-        try {
-          if (err || !user) {
-            const { statusCode = 400, message } = info;
-            return res.status(statusCode).json({
-              status: "error",
-              error: {
-                message,
-              },
-            });
-          }
-          // const otp = otpGenerator();
-          // const otpExpiration = dayjs().add(30, "minute").format();
-          // const otpObj = {
-          //   otp,
-          //   otpExpiration,
-          // };
-          //   const {
-          // 	default: { sendOTPMail },
-          //   } = await import('../services/email/sendEmail');
-          //   // SEND EMAIL ASYNC AND DOES NOT HOLD THE PROCESS | CATCH ERROR AND LOG TO THE FILE | DON'T STOP PROCESS
-          //   sendOTPMail(otp, user.email)
-          // 	.then((mailResponse) => {
-          // 	  console.log(mailResponse);
-          // 	})
-          // 	.catch((error) => {
-          // 	  console.log(error, 'error in calling');
-          // 	});
-          //   await User.findOneAndUpdate({ _id: user._id }, otpObj, { new: true });
-          //   const newCustomer	 = new Customer();
-          //   newCustomer.user = user._id;
+  addUserInfo: async (req, res) => {
+    try {
+      const {
+        email,
 
-          //   const stripeCustomer = await stripe.customers.create({
-          // 	description: 'New Customer Created',
-          //   });
-          //   console.log(stripeCustomer, 'stripe obj');
-          //   newCustomer.stripeId = stripeCustomer.id;
-          //   newCustomer.save();
+        fullName,
+        phoneNumber,
+        // role,
+        gender,
+        age,
 
-          res.status(200).json({
-            status: "success",
-            message: "Sign Up Successful",
-            data: { user },
-          });
-          createCookieFromToken(user, 201, req, res);
-        } catch (error) {
-          DEBUG(error);
-          console.log(error.response);
-          res.status(500).json({
-            status: 0,
-            message: "Sign Up failed!",
-            error: { error },
-          });
-          //   throw new ApplicationError(500, error);
-        }
+        user_device_token,
+        user_device_type,
+      } = req.body;
+      const checkEmail = await User.checkExistingField("email", email);
+      //   if (role === "admin") {
+      //     return cb(null, false, {
+      //       statusCode: 409,
+      //       message: "Operation Not Allowed",
+      //     });
+      //   }
+
+      if (checkEmail) {
+        return res.status(409).json({
+          status: 0,
+          message: "Email already registered, Please Enter Different Email!",
+        });
       }
-    )(req, res, next);
+
+      // await sendUserCredentials(email, newUser);
+      const user = await User.findOneAndUpdate(
+        { phoneNumber: phoneNumber },
+        {
+          email: email,
+          fullName: fullName,
+          gender: gender,
+          age: age,
+          isProfileCompleted: true,
+        },
+        { timestamps: true }
+      );
+
+      res.status(200).json({
+        status: "success",
+        message: "Registration Sucessfull",
+        data: { user },
+      });
+      // console.log("newUserResult>>>>>>>>>",newUserResult)
+    } catch (err) {
+      DEBUG(err);
+      res.status(400).json({
+        status: 0,
+        message: "Registration failed",
+        error: { err },
+      });
+      console.error(err);
+      // return cb(null, false, { statusCode: 400, message: err.message });
+    }
   },
 
   /**
