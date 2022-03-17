@@ -12,6 +12,7 @@ const allRoles = {
     "UserInfoDetails",
   ],
   user: ["UpdateUserAccountLocation"],
+  expert: ["UpdateUserAccountLocation"],
 };
 const roles = Object.keys(allRoles);
 const roleRights = new Map(Object.entries(allRoles));

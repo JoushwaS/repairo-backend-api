@@ -120,9 +120,9 @@ module.exports = {
    * @return {Promise<*>}
    */
 
-  signup: async (req, res, next) => {
+  addUserInfo: async (req, res, next) => {
     passport.authenticate(
-      "signup",
+      "addUserInfo",
       { session: false },
       async (err, user, info) => {
         try {
@@ -135,12 +135,12 @@ module.exports = {
               },
             });
           }
-          //   const otp = otpGenerator();
-          //   const otpExpiration = dayjs().add(30, 'minute').format();
-          //   const otpObj = {
-          // 	otp,
-          // 	otpExpiration,
-          //   };
+          // const otp = otpGenerator();
+          // const otpExpiration = dayjs().add(30, "minute").format();
+          // const otpObj = {
+          //   otp,
+          //   otpExpiration,
+          // };
           //   const {
           // 	default: { sendOTPMail },
           //   } = await import('../services/email/sendEmail');
@@ -447,5 +447,56 @@ module.exports = {
         message: "Yes you are. You are a Thor-n times developer",
       },
     });
+  },
+
+  isAuthSucessful: async (req, res) => {
+    try {
+      const { otp, phoneNumber, isOtpVerified } = req.body;
+      const isUserPresent = await User.findOne({ phoneNumber: phoneNumber });
+
+      if (isUserPresent) {
+        if (isUserPresent.isProfileCompleted) {
+          await User.findOneAndUpdate(
+            { phoneNumber: phoneNumber },
+            { isOTPVerified: true, OTP: otp }
+          );
+          return res.status(200).json({
+            status: 1,
+            message: "Authentication  Successful !",
+            data: { User: isUserPresent },
+          });
+        } else if (isUserPresent.isProfileCompleted) {
+          return res.status(200).json({
+            status: 1,
+            message:
+              "Authentication  Successful,Please Complete Your Profile !",
+            data: { User: {}, isProfileCompleted: false },
+          });
+        }
+      } else {
+        const newUser = new User();
+        newUser.phoneNumber = phoneNumber;
+        await newUser.save();
+        return res.status(200).json({
+          status: 1,
+          message: "Authentication  Successful,Please Complete Your Profile !",
+          data: { User: {}, isProfileCompleted: false },
+        });
+      }
+
+      // return;
+      // res.status(200).json({
+      //   status: 1,
+      //   message: "Authentication  Successful",
+      //   data: { newPost },
+      // });
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({
+        status: 0,
+        message: "Post Creation Failed!",
+        error: { error },
+      });
+    }
   },
 };
